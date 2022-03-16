@@ -1,7 +1,6 @@
 """
-    Nach dem Scrllbar Zwischenstand mache ich hier
-    mit der _2 am Ende weiter :)
-
+    Jetzt geht es mit Widgets weiter also Nr. 3
+    Wird sicher einiges an Umbau gemacht!
 """
 
 import tkinter as tk
@@ -9,6 +8,7 @@ from tkinter import messagebox as tkmb
 from tkinter import simpledialog as tksd
 from tkinter import filedialog as tkfd
 from pathlib import Path
+from datetime import datetime
 
 # create root
 root = tk.Tk()
@@ -17,10 +17,17 @@ font_size = tk.IntVar(value=10)
 root.title('My Diary')
 root.geometry('800x600+300+300')
 root.columnconfigure(0, weight=1)
-root.rowconfigure(2, weight=1)
+root.rowconfigure(0, weight=1)
+root.configure(bg='#888')
+
+# sub-frame for form
+form_frame = tk.Frame(root)
+form_frame.grid(sticky=tk.N+tk.E+tk.S+tk.W, padx=3, pady=3)
+form_frame.columnconfigure(0, weight=1)
+form_frame.rowconfigure(5, weight=1)
 
 # subject
-subj_frame = tk.Frame(root)
+subj_frame = tk.Frame(form_frame)
 subj_frame.columnconfigure(1, weight=1)
 subject_var = tk.StringVar()
 tk.Label(
@@ -34,7 +41,7 @@ tk.Entry(
 subj_frame.grid(sticky='ew')
 
 # category
-cat_frame = tk.Frame()
+cat_frame = tk.Frame(form_frame)
 cat_frame.columnconfigure(1, weight=1)
 cat_var = tk.StringVar()
 categories = ['Work', 'Hobbies', 'Health', 'Bills']
@@ -51,11 +58,23 @@ cat_frame.grid(sticky='ew')
 
 # Private
 private_var = tk.BooleanVar(value=False)
-# tk.Checkbutton(
-#     root,
-#     variable=private_var,
-#     text='Private?'
-# ).grid(ipadx=3, ipady=3)
+tk.Checkbutton(
+    form_frame,
+    variable=private_var,
+    text='Private? '
+).grid(ipadx=2, ipady=2, sticky=tk.W)
+
+# Datestamp
+datestamp_var = tk.StringVar(value='none')
+datestamp_frame = tk.Frame(form_frame)
+for value in ('None', 'Date', 'Date+Time'):
+    tk.Radiobutton(
+        datestamp_frame,
+        text=value,
+        value=value,
+        variable=datestamp_var
+    ).pack(side=tk.LEFT)
+datestamp_frame.grid(row=2, sticky='e', padx=3, pady=3)
 
 # message
 message_frame = tk.LabelFrame(root, text='Message')
@@ -71,11 +90,11 @@ scrollbar.configure(command=message_inp.yview)
 message_inp.configure(yscrollcommand=scrollbar.set)
 
 # save button
-# save_btn = tk.Button(
-#     root,
-#     text='Save'
-# )
-# save_btn.grid(sticky=tk.E + tk.W, ipadx=3, ipady=3)
+save_btn = tk.Button(
+    root,
+    text='Save'
+)
+save_btn.grid(sticky=tk.E + tk.W, ipadx=3, ipady=3)
 
 # open button
 # open_btn = tk.Button(

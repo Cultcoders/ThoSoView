@@ -1,81 +1,112 @@
 """
-    Nach dem Scrllbar Zwischenstand mache ich hier
-    mit der _2 am Ende weiter :)
-
+    Jetzt geht es mit Widgets weiter also Nr. 3
+    Wird sicher einiges an Umbau gemacht!
 """
 
 import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox as tkmb
 from tkinter import simpledialog as tksd
 from tkinter import filedialog as tkfd
 from pathlib import Path
+from datetime import datetime
 
 # create root
 root = tk.Tk()
 font_size = tk.IntVar(value=10)
 # configure root
-root.title('My Diary')
+root.title('My Diary TTK')
 root.geometry('800x600+300+300')
 root.columnconfigure(0, weight=1)
-root.rowconfigure(2, weight=1)
+root.rowconfigure(0, weight=1)
+root.configure(bg='#888')
+
+notebook = ttk.Notebook(root)
+notebook.grid(sticky='nesw', padx=5, pady=5)
+notebook.enable_traversal()
+
+# sub-frame for form
+form_frame = ttk.Frame(notebook)
+# form_frame.grid(sticky=tk.N+tk.E+tk.S+tk.W, padx=3, pady=3)
+form_frame.columnconfigure(0, weight=1)
+form_frame.rowconfigure(5, weight=1)
+notebook.add(form_frame, text='Diary Entry', underline=0)    # underline = id char from text=
+
+dummy_frame = ttk.Frame(notebook)
+notebook.add(dummy_frame, text='Dummy Entry', underline=1)    # underline = id char from text=
 
 # subject
-subj_frame = tk.Frame(root)
+subj_frame = ttk.Frame(form_frame)
 subj_frame.columnconfigure(1, weight=1)
 subject_var = tk.StringVar()
-tk.Label(
+ttk.Label(
     subj_frame,
     text='Subject: '
 ).grid(sticky='we', padx=5, pady=5)
-tk.Entry(
+ttk.Entry(
     subj_frame,
     textvariable=subject_var
 ).grid(row=0, column=1, sticky=tk.E + tk.W)
 subj_frame.grid(sticky='ew')
 
 # category
-cat_frame = tk.Frame()
+cat_frame = ttk.Frame(form_frame)
 cat_frame.columnconfigure(1, weight=1)
 cat_var = tk.StringVar()
 categories = ['Work', 'Hobbies', 'Health', 'Bills']
-tk.Label(
+ttk.Label(
     cat_frame,
     text='Category: '
 ).grid(sticky=tk.E + tk.W, padx=5, pady=5)
-tk.OptionMenu(
+ttk.Combobox(
     cat_frame,
-    cat_var,
-    *categories
+    textvariable=cat_var,
+    values=categories
 ).grid(row=0, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 cat_frame.grid(sticky='ew')
 
 # Private
 private_var = tk.BooleanVar(value=False)
-# tk.Checkbutton(
-#     root,
-#     variable=private_var,
-#     text='Private?'
-# ).grid(ipadx=3, ipady=3)
+ttk.Checkbutton(
+    form_frame,
+    variable=private_var,
+    text='Private? '
+).grid(ipadx=2, ipady=2, sticky=tk.W)
+
+# Datestamp
+datestamp_var = tk.StringVar(value='none')
+datestamp_frame = ttk.Frame(form_frame)
+for value in ('None', 'Date', 'Date+Time'):
+    ttk.Radiobutton(
+        datestamp_frame,
+        text=value,
+        value=value,
+        variable=datestamp_var
+    ).pack(side=tk.LEFT)
+datestamp_frame.grid(row=2, sticky='e', padx=3, pady=3)
+
+# seperator
+# ttk.Separator(form_frame, orient=tk.HORIZONTAL).grid(sticky='ew')
 
 # message
-message_frame = tk.LabelFrame(root, text='Message')
+message_frame = ttk.LabelFrame(form_frame, text='Message')
 message_frame.columnconfigure(0, weight=1)
 message_frame.rowconfigure(0, weight=1)
 message_inp = tk.Text(message_frame)
 message_inp.grid(sticky='nesw')
 
-scrollbar = tk.Scrollbar(message_frame)
+scrollbar = ttk.Scrollbar(message_frame)
 scrollbar.grid(row=0, column=1, sticky='nes')
 message_frame.grid(sticky='nesw')
 scrollbar.configure(command=message_inp.yview)
 message_inp.configure(yscrollcommand=scrollbar.set)
 
 # save button
-# save_btn = tk.Button(
-#     root,
-#     text='Save'
-# )
-# save_btn.grid(sticky=tk.E + tk.W, ipadx=3, ipady=3)
+save_btn = ttk.Button(
+    form_frame,
+    text='Save'
+)
+save_btn.grid(sticky=tk.E + tk.W, ipadx=3, ipady=3)
 
 # open button
 # open_btn = tk.Button(
@@ -87,7 +118,7 @@ message_inp.configure(yscrollcommand=scrollbar.set)
 # status bar
 status_var = tk.StringVar()
 tk.Label(
-    root,
+    form_frame,
     textvariable=status_var
 ).grid(row=100, sticky=tk.W + tk.E, ipadx=3, ipady=3)
 
@@ -159,7 +190,7 @@ def save():
     status_var.set(f'Message was saved to {filename}')
     tkmb.showinfo('Saved', f'Message was saved to {filename}')
 
-# save_btn.configure(command=save)
+save_btn.configure(command=save)
 
 def private_warn(*arg):
     """ Warn the user of consequences of private """
