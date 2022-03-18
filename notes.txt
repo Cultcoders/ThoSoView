@@ -1,0 +1,2 @@
+
+imghdr - python module detects file type of some image files
